@@ -121,3 +121,21 @@ And then pass it to the `DebugMenuOverlay` or `DebugMenuAttacher`
 
 ## DEMO
 ![](./DEMO.gif)
+
+
+# Contributing
+You can contribute to this project by submitting a pull request.
+
+**Publishing**
+1. Update the version in `build.gradle`
+2. Commit your changes
+3. Push to the branch
+4. Create a pull request
+5. Merge the pull request
+6. Create a new release
+
+**Creating a new release**
+This will publish the library to the Github maven repository.
+```bash
+./gradlew clean assembleRelease publish
+```
