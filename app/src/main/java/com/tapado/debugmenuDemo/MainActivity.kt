@@ -4,44 +4,42 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.datastore.dataStore
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.tapado.debugmenuDemo.analytics.MockAnalyticsManager
+import com.tapado.debugmenuDemo.data.AppRepository
+import com.tapado.debugmenuDemo.data.demoDataStore
+import com.tapado.debugmenuDemo.ui.DemoScreen
+import com.tapado.debugmenuDemo.ui.DemoViewModel
 import com.tapado.debugmenuDemo.ui.theme.DebugMenuTheme
+import com.tapadoo.debugmenu.DebugMenuOverlay
 
 class MainActivity : ComponentActivity() {
+    private lateinit var viewModel: DemoViewModel
+
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val factory = DemoViewModel.Companion.Factory(applicationContext)
+        viewModel = ViewModelProvider(this, factory)[DemoViewModel::class.java]
         enableEdgeToEdge()
+
+        // Demo: Attach the DebugMenu using the Attacher (no Compose dependency required in consumer app)
+//        DebugMenuAttacher.attach(this, dataStores = listOf(repository.dataStore))
+
         setContent {
             DebugMenuTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Box(Modifier.fillMaxSize()) {
+                    DemoScreen(viewModel = viewModel)
+                    DebugMenuOverlay(dataStores = listOf(this@MainActivity.applicationContext.demoDataStore))
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DebugMenuTheme {
-        Greeting("Android")
     }
 }
