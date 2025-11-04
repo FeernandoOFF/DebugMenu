@@ -19,12 +19,14 @@ import com.tapado.debugmenuDemo.data.demoDataStore
 import com.tapado.debugmenuDemo.ui.DemoScreen
 import com.tapado.debugmenuDemo.ui.DemoViewModel
 import com.tapado.debugmenuDemo.ui.theme.DebugMenuTheme
-import com.tapadoo.debugmenu.DebugMenuAttacher
 import com.tapadoo.debugmenu.DebugMenuOverlay
 import com.tapadoo.debugmenu.analytics.AnalyticsModule
 import com.tapadoo.debugmenu.datastore.DataStoreModule
 import com.tapadoo.debugmenu.dynamic.DynamicAction
 import com.tapadoo.debugmenu.dynamic.DynamicModule
+import com.tapadoo.debugmenu.logs.DebugLogs
+import com.tapadoo.debugmenu.logs.LoggingModule
+import timber.log.Timber
 
 class MainActivity : ComponentActivity() {
     private lateinit var viewModel: DemoViewModel
@@ -32,6 +34,14 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.plant(
+            object : Timber.DebugTree() {
+                override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                    super.log(priority, tag, message, t)
+                    DebugLogs.log(priority = priority, tag = "$tag", message = message, t = t)
+                }
+            }
+        )
         val factory = DemoViewModel.Companion.Factory(applicationContext)
         viewModel = ViewModelProvider(this, factory)[DemoViewModel::class.java]
         enableEdgeToEdge()
@@ -77,6 +87,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             ),
                             AnalyticsModule(),
+                            LoggingModule(),
                             DataStoreModule(
                                 listOf(
                                     this@MainActivity.applicationContext.demoDataStore
