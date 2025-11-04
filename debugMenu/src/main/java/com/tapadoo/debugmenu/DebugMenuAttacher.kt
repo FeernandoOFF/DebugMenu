@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.ViewCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.tapadoo.debugmenu.module.DebugMenuModule
 
 /**
  * Attaches the Debug Menu overlay to any Activity without requiring the app module to depend on
@@ -17,7 +18,7 @@ object DebugMenuAttacher {
     @JvmStatic
     fun attach(
         activity: Activity,
-        dataStores: List<DataStore<Preferences>> = emptyList(),
+        modules: List<DebugMenuModule>,
     ) = runCatching {
         val decor = activity.window?.decorView as? ViewGroup ?: return@runCatching
         // Avoid duplicates
@@ -42,10 +43,10 @@ object DebugMenuAttacher {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
             setContent {
-//                DebugMenuOverlay(
-//                    dataStores = dataStores,
-//                    showFab = true
-//                )
+                DebugMenuOverlay(
+                    showFab = true,
+                    modules = modules,
+                )
             }
         }
         container.addView(composeView)

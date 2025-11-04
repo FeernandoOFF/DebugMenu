@@ -1,5 +1,6 @@
 package com.tapadoo.debugmenu
 
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -29,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.tapadoo.debugmenu.analytics.AnalyticsModule
 import com.tapadoo.debugmenu.module.DebugMenuModule
@@ -55,7 +59,7 @@ fun DebugMenuOverlay(
     modifier: Modifier = Modifier,
     showFab: Boolean = true,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-    colorScheme: ColorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
+    colorScheme: ColorScheme = getTheme()
 ) {
     var showContent by remember { mutableStateOf(false) }
     MaterialTheme(
@@ -77,7 +81,10 @@ fun DebugMenuOverlay(
 
             ModalBottomSheet(
                 onDismissRequest = {
-                    scope.launch { sheetState.hide() }.invokeOnCompletion { showContent = !showContent }
+                    scope.launch {
+                        showContent = !showContent
+                        sheetState.hide()
+                    }
                 },
                 sheetState = sheetState,
                 tonalElevation = 0.dp,
@@ -114,6 +121,23 @@ fun DebugMenuOverlay(
         }
 
 
+    }
+}
+
+
+@Composable
+internal fun getTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = true,
+): ColorScheme {
+    return when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+
+        darkTheme -> darkColorScheme()
+        else -> lightColorScheme()
     }
 
 }

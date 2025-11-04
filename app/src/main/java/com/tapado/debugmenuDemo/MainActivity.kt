@@ -2,6 +2,7 @@ package com.tapado.debugmenuDemo
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
@@ -18,11 +19,12 @@ import com.tapado.debugmenuDemo.data.demoDataStore
 import com.tapado.debugmenuDemo.ui.DemoScreen
 import com.tapado.debugmenuDemo.ui.DemoViewModel
 import com.tapado.debugmenuDemo.ui.theme.DebugMenuTheme
+import com.tapadoo.debugmenu.DebugMenuAttacher
 import com.tapadoo.debugmenu.DebugMenuOverlay
 import com.tapadoo.debugmenu.analytics.AnalyticsModule
-import com.tapadoo.debugmenu.dynamic.DynamicModule
-import com.tapadoo.debugmenu.dynamic.DynamicAction
 import com.tapadoo.debugmenu.datastore.DataStoreModule
+import com.tapadoo.debugmenu.dynamic.DynamicAction
+import com.tapadoo.debugmenu.dynamic.DynamicModule
 
 class MainActivity : ComponentActivity() {
     private lateinit var viewModel: DemoViewModel
@@ -35,11 +37,28 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         // Demo: Attach the DebugMenu using the Attacher (no Compose dependency required in consumer app)
-//        DebugMenuAttacher.attach(this, dataStores = listOf(repository.dataStore))
+//        DebugMenuAttacher.attach(
+//            this,
+//            listOf(
+//                AnalyticsModule(),
+//                DataStoreModule(listOf(this@MainActivity.applicationContext.demoDataStore)),
+//                DynamicModule(
+//                    title = "Custom Module",
+//                    globalActions = listOf(
+//                        DynamicAction("Global Action 1") {
+//                          // Perform global action
+//                        }
+//                    )
+//                ),
+//            ))
 
         setContent {
             DebugMenuTheme {
                 var loggedIn by remember { mutableStateOf(false) }
+
+                BackHandler(loggedIn) {
+                    loggedIn = false
+                }
 
                 Box(Modifier.fillMaxSize()) {
                     if(!loggedIn) {
@@ -52,7 +71,9 @@ class MainActivity : ComponentActivity() {
                             DynamicModule(
                                 title = "Custom Module",
                                 globalActions = listOf(
-                                    DynamicAction("Hey"){}
+                                    DynamicAction("Global Action 1") {
+                                          // Perform global action
+                                    }
                                 )
                             ),
                             AnalyticsModule(),
@@ -61,7 +82,7 @@ class MainActivity : ComponentActivity() {
                                     this@MainActivity.applicationContext.demoDataStore
                                 )
                             ),
-                        )
+                        ),
                     )
                 }
             }
