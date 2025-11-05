@@ -9,7 +9,7 @@ import androidx.datastore.preferences.core.Preferences
 class DataStoreModule(
     val dataStores: List<DataStore<Preferences>>,
 ) : DebugMenuModule{
-    override val title: String = "Preferences"
+    override val title: String = "DataStore"
 
     @Composable
     override fun Content() {

@@ -71,6 +71,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Box(Modifier.fillMaxSize()) {
+                    // Simulate Navigation
                     if(!loggedIn) {
                         DemoScreen(viewModel = viewModel) { loggedIn = true }
                     } else {

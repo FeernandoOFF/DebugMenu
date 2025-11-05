@@ -1,6 +1,7 @@
 package com.tapadoo.debugmenu
 
 import android.app.Activity
+import android.app.Application
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.ui.platform.ComposeView
@@ -14,6 +15,27 @@ import com.tapadoo.debugmenu.module.DebugMenuModule
  * Compose APIs directly. Call once from your Activity onCreate().
  */
 object DebugMenuAttacher {
+
+    @JvmStatic
+    fun attachToApplication(
+        application: Application,
+        modules: List<DebugMenuModule>,
+    ) {
+        application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityCreated(activity: Activity, savedInstanceState: android.os.Bundle?) {
+                DebugMenuAttacher.attach(activity, modules)
+            }
+
+            override fun onActivityStarted(activity: Activity) {}
+            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivityStopped(activity: Activity) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: android.os.Bundle) {}
+            override fun onActivityDestroyed(activity: Activity) {}
+        })
+    }
+
+
     @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
     @JvmStatic
     fun attach(
