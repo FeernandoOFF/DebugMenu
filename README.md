@@ -1,62 +1,45 @@
-## Tapadoo Android Debug Menu
-A simple library to add a debug menu to your Android app for quick access and visualise Analytics and DataStore data.
+## Android Debug Menu
+
+A module-based debug menu to debug your Android application
+
+A simple, modular library that adds a floating debug menu to your Android app, allowing you to view analytics events,
+inspect DataStore preferences, monitor logs, and create custom debugging modules.
+
+### Why?
+
+Currently, there are a couple of other debug menu libraries,
+like [Lens-Logger](https://github.com/farhazulMullick/Lens-Logger/tree/feat/log-datastore)
+and [Beagle](https://github.com/pandulapeter/beagle), however, they were either focused on a limited set of features or
+interfered with the LayoutInpector in Android Studio.
+
+This library offers a lightweight, easy-to-use, and modular debug menu that you can easily integrate into your app and
+customise to your needs.
+
+<details>
+<summary>Demo</summary>
+    <img src="https://github.com/Tapadoo/DebugMenu/blob/main/DEMO.gif"  alt="DebugMenu demo"/>
+<br/>
+</details>
+
+## Getting Started
 
 ### Installation
 
-In order to use the library, you need to:
-
-1. Register the repository in your top-level `build.gradle` file so that it can be resolved:
-
-> Example in Groovy
-
-```groovy
-repositories {
-    maven {
-        url = uri("https://maven.pkg.github.com/Tapadoo/DebugMenu")
-        credentials {
-            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-        }
-    }
-}
-```
-
-> Example in Kotlin
-
-```kotlin
-repositories {
-    maven {
-        url = uri("https://maven.pkg.github.com/Tapadoo/DebugMenu")
-        credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
-        }
-    }
-}
-```
-
-2. Declare the library as a dependency in your app's `build.gradle`
+1. Declare the library as a dependency in your app's `build.gradle`
 
 ```kotin
-    implementation "com.tapadoo:debugmenu:1.0.1"
+    implementation("com.tapadoo:debugmenu:<version>")
 ```
 
-3. Add your Github account and token to your `local.properties` file:
+### Basic Usage
 
-> Note we can have a shared token for all our repositories that can only read packages and add it to `gradle.properties`
-> file.
-
-```properties
-gpr.user=<GithubUserName>
-gpr.token=<GithubToken>
-```
-
-### Usage
-
-In order to use the library, you first need to add the FAB to your Activity/Composable, this changes depending on the
+In order to use the library, you first need to add the FAB to your Activity/Composable; this changes depending on the
 project.
 
-1. If you're using a single-activity Composable, you can add the `DebugMenuOverlay` to your top-level composable.
+<details>
+<summary>Single-Activity Composable App</summary>
+<br/>
+If you're using a single-activity Composable, you can add the `DebugMenuOverlay` to your top-level composable.
 
 ```kotlin
 setContent {
@@ -65,36 +48,104 @@ setContent {
         // Only show the debug menu in debug builds
         if (BuildConfig.DEBUG) {
             DebugMenuOverlay(
-                dataStores = listOf(context.userPrefsDataStore)
+                modules = listOf(
+                    // Your Modules...
+                ),
             )
         }
     }
 }
 ```
 
-2. If your project is a multi-activity navigation, you can add the `DebugMenuAttacher` to your Activity's `onCreate`
-   method.
+</details>
+
+<details>
+<summary>Multi-Activity App</summary>
+<br/>
+If your project is a multi-activity navigation, you can use the `DebugMenuAttacher.attachToApplication` method to your
+`Activity.onCreate()` to attach the debug menu to your whole application. 
+
+This also has the advantage of not having to use Compose in your project.
 
 ```kotlin
-class YourActivity: ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+class DemoApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
         if (BuildConfig.DEBUG) {
-            DebugMenuAttacher.attach(this, listOf(this.applicationContext.dataStore))
+            DebugMenuAttacher.attachToApplication(
+                this,
+                listOf(
+                    // Your Modules...
+                )
+            )
         }
     }
 }
 ```
 
+</details>
 
-#### Integrate Analytics
-Most analytics libraries have a common schema, like `event_name` and `event_properties` that usually is a map of key-value pairs, you can 
-just add the event to the `DebugAnalytics` singleton and it will be logged in the debug menu.
+<details>
+<summary>Single Activity Fragment App</summary>
+<br/>
+If your project is a single activity but uses Fragments for navigation, you can use the `DebugMenuAttacher.attach` method to your `Activity.onCreate()` to attach the debug menu to your whole application. 
+
+This also has the advantage of not having to use Compose in your project.
+
+```kotlin
+class MainActivity : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (BuildConfig.DEBUG) {
+            DebugMenuAttacher.attach(
+                this,
+                listOf(
+                    // Your Modules...
+                )
+            )
+        }
+    }
+}
+```
+
+</details>
+
+## Integrating Modules
+
+> Note: Modules determine the order in which they are displayed in the debug menu.
+
+<details>
+<summary>Analytics Module</summary>
+<br/>
+
+**Adding Analytics Module**
+
+Just add the `DebugAnalytics` singleton to your list of Modules, and you're good to go.
+
+```kotlin
+DebugMenuOverlay(
+    modules = listOf(
+        AnalyticsModule(),
+        // Rest of your modules...
+    ),
+)
+```
+
+**Logging Analytics Events**
+
+Most analytics libraries have a common schema, like `event_name` and `event_properties` that usually is a map of
+key-value pairs, you can
+just add the event to the `DebugAnalytics` singleton, and it will be logged in the debug menu.
+
+> **Note:** The signature of the `logEvent` method is the same as Firebase Analytics, so if you're using Firebase
+> Analytics,
+> you can just call it with the same signature.
 
 ```kotlin
 class AnalyticsManager {
     fun logEvent(event: AnalyticsEvent) {
-        // create bundle or map from event
+        // create a bundle or map from an event
         DebugAnalytics.logEvent(event.name, bundle) // <-- Add the event to the DebugMenu
         firebaseAnalytics.logEvent(event.name, bundle)
     }
@@ -102,40 +153,170 @@ class AnalyticsManager {
 
 ```
 
-#### Integrate with DataStore
-Most Repositories use DataStore privately to store data, you can just make an extension function on top of the `Context`:
+</details>
+
+<details>
+<summary>DataStore Module</summary>
+<br/>
+
+**Adding DataStore Module**
+
+Just add the `DataStoreModule` class to your list of Modules, and pass the list of DataStores and you're good to go. The
+UI Will automatically generate the UI for every entry.
 
 ```kotlin
-val Context.configDataStore: DataStore<Preferences> by preferencesDataStore(name = "app_datastore_key")
+DebugMenuOverlay(
+    modules = listOf(
+        DataStoreModule(
+            listOf(
+                this@MainActivity.applicationContext.demoDataStore
+            )
+        ),
+        // Rest of your modules...
+    ),
+)
+```
+
+**Exposing DataStores to the DebugMenu**
+
+Most Repositories use DataStore privately to store data, you can convert it into an extension function on top of the
+`Context` type:
+
+```kotlin
+val Context.demoDataStore: DataStore<Preferences> by preferencesDataStore(name = "app_datastore_key")
 ``` 
 And then pass it to the `DebugMenuOverlay` or `DebugMenuAttacher`
 
 ```kotlin
-    DebugMenuAttacher.attach(this, listOf(this.applicationContext.configDataStore))
+DebugMenuAttacher.attach(
+    this,
+    modules = listOf(
+        DataStoreModule(listOf(this@MainActivity.applicationContext.demoDataStore)),
+        // Rest of your modules...
+    ),
+)
 // or
-    DebugMenuOverlay(
-        dataStores = listOf(context.configDataStore)
+DebugMenuOverlay(
+    modules = listOf(
+        DataStoreModule(
+            listOf(this@MainActivity.applicationContext.demoDataStore)
+        ),
+        // Rest of your modules...
+    ),
+)
+
+```
+
+</details>
+
+<details>
+<summary>Logging Module</summary>
+<br/>
+The logging module captures log messages from your app and displays them in the debug menu. 
+
+**Adding the module**
+
+```kotlin
+DebugMenuAttacher.attach(
+    this,
+    modules = listOf(
+        LoggingModule(),
+        // Rest of your modules...
+    ),
+)
+// or
+DebugMenuOverlay(
+    modules = listOf(
+        LoggingModule(),
+        // Rest of your modules...
+    ),
+)
+```
+
+**Integrating Logs**
+Integrate it by wrapping your existing logger. (Example with Timber)
+
+```kotlin
+class DemoApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        if (BuildConfig.DEBUG) {
+            Timber.plant(
+                object : Timber.DebugTree() {
+                    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                        super.log(priority, tag, message, t)
+                        DebugLogs.log(priority = priority, tag = "$tag", message = message, t = t)
+                    }
+                }
+            )
+        }
+    }
+}
+```
+
+</details>
+
+<details>
+<summary>Dynamic Module</summary>
+<br/>
+The dynamic module allows you to add custom actions to the debug menu. They can either be:
+
+- Global actions: These actions are displayed in the debug menu, and can be triggered from anywhere in the app.
+- Dynamic Actions: These actions are only displayed when the user is in a specific screen and get automatically removed
+  when the user navigates away from that screen.
+
+**Adding the module & Global Actions**
+
+```kotlin
+DebugMenuAttacher.attach(
+    this,
+    modules = listOf(
+        DynamicModule(
+            globalActions = listOf(
+                DynamicAction("Global Action 1") {
+                    // Perform global action
+                }
+            )
+        ),
+        // Rest of your modules...
+    ),
+)
+// or
+DebugMenuOverlay(
+    modules = listOf(
+        DynamicModule(
+            globalActions = listOf(
+                DynamicAction("Global Action 1") {
+                    // Perform global action
+                }
+            )
+        ),
+        // Rest of your modules...
     )
-
+)
 ```
 
-## DEMO
-![](./DEMO.gif)
+**Adding Dynamic Actions**
 
+These will only be displayed when the user is in the screen where they are added, ideal for actions that are only
+relevant to that screen.
 
-# Contributing
-You can contribute to this project by submitting a pull request.
-
-**Publishing**
-1. Update the version in `build.gradle`
-2. Commit your changes
-3. Push to the branch
-4. Create a pull request
-5. Merge the pull request
-6. Create a new release
-
-**Creating a new release**
-This will publish the library to the Github maven repository.
-```bash
-./gradlew clean assembleRelease publish
+```kotlin
+@Composable
+fun YourScreenComposable() {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DynamicModuleActions(
+        lifecycleOwner, DynamicAction("Name of the action", "Description of the action (Optional)") {
+            // Do something when the user clicks the action (i.e. talk to ViewModel)
+        }
+    )
+}
 ```
+
+</details>
+
+### Creating your own Module
+
+You can create custom modules to display any debugging information specific to your app. For example, a network request
+monitor, feature flags viewer, or app configuration inspector. Just extend the `DebugMenuModule` class and implement its
+methods.
