@@ -6,23 +6,11 @@ plugins {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Tapadoo/DebugMenu")
-            credentials {
-                username = providers.gradleProperty("gpr.user").getOrElse("your_github_username")
-                password = providers.gradleProperty("gpr.token").getOrElse("your_personal_access_token")
-            }
-        }
-    }
-
     publications {
         register<MavenPublication>("release") {
             groupId = "com.tapadoo"
             artifactId = "debugmenu"
-            version = "1.0.1"
-
+            version = "1.0.2"
 
             afterEvaluate {
                 from(components["release"])
