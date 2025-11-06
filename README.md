@@ -28,7 +28,7 @@ customise to your needs.
 1. Declare the library as a dependency in your app's `build.gradle`
 
 ```kotin
-    implementation("com.tapadoo:debugmenu:<version>")
+    implementation("com.github.Tapadoo:DebugMenu:<version>")
 ```
 
 ### Basic Usage
