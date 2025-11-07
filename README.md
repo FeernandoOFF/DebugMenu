@@ -111,6 +111,38 @@ class MainActivity : ComponentActivity() {
 
 </details>
 
+### Showing the Debug Menu
+
+<details>
+<summary>FAB Button</summary>
+With all the usage methods above, you can also pass a `showFab` parameter to show or hide the FAB button.
+
+```kotlin
+DebugMenuOverlay(
+    showFab = true, // <-- Only open through the FAB button
+    enableShake = false, // <-- Disable shake to open
+    modules = listOf(
+        // your modules...
+    )
+)
+```
+</details>
+
+<details>
+<summary> Shake to Open </summary>
+If you only want the menu to be opened through shake, you can pass `enableShake` to `true` and disable the FAB button.
+
+```kotlin
+DebugMenuOverlay(
+    showFab = false, // <-- Disable FAB buttoj
+    enableShake = true, // <-- Enalbe shake to open
+    modules = listOf(
+        // your modules...
+    )
+)
+```
+</details>
+
 ## Integrating Modules
 
 > Note: Modules determine the order in which they are displayed in the debug menu.
@@ -121,7 +153,8 @@ class MainActivity : ComponentActivity() {
 
 **Adding Analytics Module**
 
-Just add the `DebugAnalytics` singleton to your list of Modules, and you're good to go.
+First, to show the module, you need to add the `AnalyticsModule` to your list of Modules. Then, you can use the
+`DebugAnalytics` singleton to log events.
 
 ```kotlin
 DebugMenuOverlay(
@@ -140,7 +173,7 @@ just add the event to the `DebugAnalytics` singleton, and it will be logged in t
 
 > **Note:** The signature of the `logEvent` method is the same as Firebase Analytics, so if you're using Firebase
 > Analytics,
-> you can just call it with the same signature.
+> you can just call it in the same way.
 
 ```kotlin
 class AnalyticsManager {
