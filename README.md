@@ -10,7 +10,7 @@ inspect DataStore preferences, monitor logs, and create custom debugging modules
 Currently, there are a couple of other debug menu libraries,
 like [Lens-Logger](https://github.com/farhazulMullick/Lens-Logger/tree/feat/log-datastore)
 and [Beagle](https://github.com/pandulapeter/beagle), however, they were either focused on a limited set of features or
-interfered with the LayoutInpector in Android Studio.
+interfered with the LayoutInspector in Android Studio.
 
 This library offers a lightweight, easy-to-use, and modular debug menu that you can easily integrate into your app and
 customise to your needs.
@@ -33,7 +33,7 @@ customise to your needs.
 
 ### Basic Usage
 
-In order to use the library, you first need to add the FAB to your Activity/Composable; this changes depending on the
+To use the library, you first need to add the FAB to your Activity/Composable; this changes depending on the
 project.
 
 <details>
@@ -134,8 +134,8 @@ If you only want the menu to be opened through shake, you can pass `enableShake`
 
 ```kotlin
 DebugMenuOverlay(
-    showFab = false, // <-- Disable FAB buttoj
-    enableShake = true, // <-- Enalbe shake to open
+    showFab = false, // <-- Disable FAB button
+    enableShake = true, // <-- Enable shake to open
     modules = listOf(
         // your modules...
     )
@@ -194,7 +194,7 @@ class AnalyticsManager {
 
 **Adding DataStore Module**
 
-Just add the `DataStoreModule` class to your list of Modules, and pass the list of DataStores and you're good to go. The
+Just add the `DataStoreModule` class to your list of Modules, and pass the list of DataStores and, you're good to go. The
 UI Will automatically generate the UI for every entry.
 
 ```kotlin
@@ -294,7 +294,7 @@ class DemoApp : Application() {
 <br/>
 The dynamic module allows you to add custom actions to the debug menu. They can either be:
 
-- Global actions: These actions are displayed in the debug menu, and can be triggered from anywhere in the app.
+- Global actions: These actions are displayed in the debug menu and can be triggered from anywhere in the app.
 - Dynamic Actions: These actions are only displayed when the user is in a specific screen and get automatically removed
   when the user navigates away from that screen.
 
