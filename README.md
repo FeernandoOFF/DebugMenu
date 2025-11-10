@@ -411,6 +411,7 @@ object DebugMenuInterceptor : Interceptor {
             url = request.url.toString(),
             method = request.method,
             headers = request.headers.toMap(),
+            responseHeaders = response.headers.toMap(),
             body = request.body?.toString() ?: "",
             timestamp = startTime,
             duration = duration,

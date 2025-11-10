@@ -8,6 +8,7 @@ data class DebugNetworkRequest(
     val url: String,
     val method: String,
     val headers: Map<String, String>,
+    val responseHeaders: Map<String, String>,
     val body: String,
     val timestamp: Long,
     val durationMs: Long,

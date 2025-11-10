@@ -370,6 +370,15 @@ private fun ResponseTab(request: DebugNetworkRequest) {
             Spacer(modifier = Modifier.height(16.dp))
         }
 
+        item {
+            SectionTitle("Response Headers")
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        items(request.responseHeaders.entries.toList()) { (key, value) ->
+            HeaderItem(key = key, value = value)
+        }
+
         if (!request.response.isNullOrEmpty()) {
             item {
                 SectionTitle("Response Body")

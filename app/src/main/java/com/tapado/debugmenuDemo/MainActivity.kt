@@ -126,6 +126,7 @@ private fun DebugNetworkRequest.Companion.random(): DebugNetworkRequest {
         url = urls.random(),
         method = methods.random(),
         headers = mapOf("Content-Type" to "application/json"),
+        responseHeaders = mapOf("Content-Type" to "application/json"),
         body = """{"id": ${Random.nextInt(1000)}}""",
         timestamp = System.currentTimeMillis(),
         durationMs = Random.nextLong(100, 2000),
