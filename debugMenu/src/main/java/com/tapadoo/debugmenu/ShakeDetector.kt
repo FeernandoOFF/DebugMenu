@@ -19,6 +19,7 @@ class ShakeDetector(
     private var lastX = 0f
     private var lastY = 0f
     private var lastZ = 0f
+    private var isFirstReading = true
 
     companion object {
         private const val SHAKE_THRESHOLD = 15f
@@ -26,6 +27,7 @@ class ShakeDetector(
     }
 
     fun start() {
+        isFirstReading = true
         accelerometer?.let {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
         }
@@ -44,6 +46,14 @@ class ShakeDetector(
         val x = event.values[0]
         val y = event.values[1]
         val z = event.values[2]
+
+        if (isFirstReading) {
+            lastX = x
+            lastY = y
+            lastZ = z
+            isFirstReading = false
+            return
+        }
 
         val deltaX = x - lastX
         val deltaY = y - lastY
