@@ -1,16 +1,8 @@
 package com.tapadoo.debugmenu.analytics
 
-import android.R.attr.value
 import android.os.Bundle
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-
-/** Public display model for analytics items shown in the debug menu */
-data class AnalyticsItem(
-    val name: String,
-    val params: Map<String, String> = emptyMap(),
-    val timestampMs: Long = System.currentTimeMillis(),
-)
 
 /** Internal state holder and public API for analytics */
 object DebugAnalytics {
@@ -23,7 +15,7 @@ object DebugAnalytics {
         val params = bundle.keySet().associateWith { key ->
             bundle.get(key).toString()
         }
-        
+
         runCatching {
             events.add(AnalyticsItem(
                 name = eventName,

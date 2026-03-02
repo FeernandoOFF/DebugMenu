@@ -53,7 +53,6 @@ object DebugMenuAttacher {
         enableShake: Boolean = false,
     ) = runCatching {
         val decor = activity.window?.decorView as? ViewGroup ?: return@runCatching
-
         // Avoid duplicates
         val existing = decor.findViewWithTag<FrameLayout>(TAG)
         if (existing != null) return@runCatching

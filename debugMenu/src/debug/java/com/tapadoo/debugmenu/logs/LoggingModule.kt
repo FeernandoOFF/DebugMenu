@@ -107,7 +107,7 @@ class LoggingModule: DebugMenuModule {
             items(logs) { item ->
                 val isExpanded = expandedLogs.contains(item)
                 val isSelected = selectedLogs.contains(item)
-                
+
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 12.dp)
@@ -218,7 +218,7 @@ class LoggingModule: DebugMenuModule {
 
     private fun shareSelectedLogs(context: Context, selectedLogs: List<LogItem>) {
         if (selectedLogs.isEmpty()) return
-        
+
         val logsText = selectedLogs.joinToString("\n\n") { logItem ->
             buildString {
                 append("[${getPriorityLabel(logItem.priority)}]")
@@ -234,14 +234,14 @@ class LoggingModule: DebugMenuModule {
                 append("\nTimestamp: ${logItem.timestampMs}")
             }
         }
-        
+
         val shareIntent = Intent().apply {
             action = Intent.ACTION_SEND
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, logsText)
             putExtra(Intent.EXTRA_SUBJECT, "Debug Logs (${selectedLogs.size} items)")
         }
-        
+
         context.startActivity(Intent.createChooser(shareIntent, "Share Logs"))
     }
 }

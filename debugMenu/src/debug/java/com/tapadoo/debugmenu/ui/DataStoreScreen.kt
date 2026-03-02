@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -106,7 +107,14 @@ internal fun DataStoreScreen(stores: List<DataStore<Preferences>>) {
                                         else -> androidx.compose.ui.text.input.KeyboardType.Text
                                     }
                                 ),
-                                label = { Text("${item.key}") })
+                                label = { Text("${item.key}") },
+                                trailingIcon = {
+                                    if (!item.value.isNullOrEmpty()) {
+                                        IconButton(onClick = { items[index] = item.copy(value = "") }) {
+                                            Icon(imageVector = Icons.Rounded.Close, contentDescription = "Clear")
+                                        }
+                                    }
+                                })
                             IconButton(onClick = {
                                 scope.launch {
                                     val v = items[index].value?.trim()
