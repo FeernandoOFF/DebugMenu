@@ -1,9 +1,5 @@
 package com.tapadoo.debugmenu.network
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-
-
 data class DebugNetworkRequest(
     val url: String,
     val method: String,
@@ -19,11 +15,4 @@ data class DebugNetworkRequest(
     val requestSize: Long = 0,
 ) {
     companion object
-}
-
-
-object DebugNetworkEvents {
-    val events: SnapshotStateList<DebugNetworkRequest> = mutableStateListOf()
-
-    fun addEvent(event: DebugNetworkRequest) = events.add(event)
 }

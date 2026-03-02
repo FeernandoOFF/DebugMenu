@@ -81,7 +81,7 @@ fun DebugMenuOverlay(
             }
         }
     }
-    
+
     MaterialTheme(
         colorScheme = colorScheme,
     ) {
