@@ -6,9 +6,15 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.ViewCompat
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.findViewTreeViewModelStoreOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.findViewTreeSavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.tapadoo.debugmenu.module.DebugMenuModule
 
 /**
@@ -26,12 +32,7 @@ object DebugMenuAttacher {
     ) {
         application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: android.os.Bundle?) {
-                try {
-                    // When attaching to an app that uses an Activity as a splash screen, it can crash
-                    DebugMenuAttacher.attach(activity, modules, showFab, enableShake)
-                } catch (e: Exception) {
-
-                }
+                DebugMenuAttacher.attach(activity, modules, showFab, enableShake)
             }
 
             override fun onActivityStarted(activity: Activity) {}
@@ -43,7 +44,6 @@ object DebugMenuAttacher {
         })
     }
 
-
     @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
     @JvmStatic
     fun attach(
@@ -53,11 +53,27 @@ object DebugMenuAttacher {
         enableShake: Boolean = false,
     ) = runCatching {
         val decor = activity.window?.decorView as? ViewGroup ?: return@runCatching
-        if(decor.findViewTreeLifecycleOwner() == null) return@runCatching
-
         // Avoid duplicates
         val existing = decor.findViewWithTag<FrameLayout>(TAG)
         if (existing != null) return@runCatching
+
+        // Ensure ViewTree owners are set for Compose.
+        // Some activities like Splash Screens might not call setContentView(), so these are missing.
+        if (decor.findViewTreeLifecycleOwner() == null) {
+            (activity as? LifecycleOwner)?.let {
+                decor.setViewTreeLifecycleOwner(it)
+            }
+        }
+        if (decor.findViewTreeViewModelStoreOwner() == null) {
+            (activity as? ViewModelStoreOwner)?.let {
+                decor.setViewTreeViewModelStoreOwner(it)
+            }
+        }
+        if (decor.findViewTreeSavedStateRegistryOwner() == null) {
+            (activity as? SavedStateRegistryOwner)?.let {
+                decor.setViewTreeSavedStateRegistryOwner(it)
+            }
+        }
 
         val container = FrameLayout(activity).apply {
             layoutParams = FrameLayout.LayoutParams(

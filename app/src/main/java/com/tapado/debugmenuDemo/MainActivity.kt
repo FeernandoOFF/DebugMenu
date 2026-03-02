@@ -19,6 +19,7 @@ import com.tapado.debugmenuDemo.data.demoDataStore
 import com.tapado.debugmenuDemo.ui.DemoScreen
 import com.tapado.debugmenuDemo.ui.DemoViewModel
 import com.tapado.debugmenuDemo.ui.theme.DebugMenuTheme
+import com.tapadoo.debugmenu.DebugMenuAttacher
 import com.tapadoo.debugmenu.DebugMenuOverlay
 import com.tapadoo.debugmenu.analytics.AnalyticsModule
 import com.tapadoo.debugmenu.datastore.DataStoreModule
@@ -81,32 +82,32 @@ class MainActivity : ComponentActivity() {
                     } else {
                         Text("Logged in!")
                     }
-                    DebugMenuOverlay(
-                        modules = listOf(
-                            DynamicModule(
-                                title = "Custom Module",
-                                globalActions = listOf(
-                                    DynamicAction("Global Action 1") {
-                                          // Perform global action
-                                    },
-                                    DynamicAction("Add API Call") {
-                                        // Mocking API call / Intercept
-                                        DebugNetworkEvents.addEvent(
-                                            DebugNetworkRequest.random()
-                                        )
-                                    }
-                                )
-                            ),
-                            AnalyticsModule(),
-                            LoggingModule(),
-                            DataStoreModule(
-                                listOf(
-                                    this@MainActivity.applicationContext.demoDataStore
-                                )
-                            ),
-                            NetworkModule()
-                        ),
-                    )
+//                    DebugMenuOverlay(
+//                        modules = listOf(
+//                            DynamicModule(
+//                                title = "Custom Module",
+//                                globalActions = listOf(
+//                                    DynamicAction("Global Action 1") {
+//                                          // Perform global action
+//                                    },
+//                                    DynamicAction("Add API Call") {
+//                                        // Mocking API call / Intercept
+//                                        DebugNetworkEvents.addEvent(
+//                                            DebugNetworkRequest.random()
+//                                        )
+//                                    }
+//                                )
+//                            ),
+//                            AnalyticsModule(),
+//                            LoggingModule(),
+//                            DataStoreModule(
+//                                listOf(
+//                                    this@MainActivity.applicationContext.demoDataStore
+//                                )
+//                            ),
+//                            NetworkModule()
+//                        ),
+//                    )
                 }
             }
         }
