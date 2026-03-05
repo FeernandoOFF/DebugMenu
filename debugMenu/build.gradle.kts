@@ -7,13 +7,13 @@ plugins {
 
 publishing {
     publications {
-        register<MavenPublication>("release") {
+        register<MavenPublication>("default") {
             groupId = "com.tapadoo"
             artifactId = "debugmenu"
-            version = "1.0.3"
+            version = "1.0.6"
 
             afterEvaluate {
-                from(components["release"])
+                from(components["default"])
             }
         }
     }
@@ -49,7 +49,8 @@ android {
     }
 
     publishing {
-        singleVariant("release") {
+        multipleVariants {
+            includeBuildTypeValues("debug", "release")
             withSourcesJar()
             withJavadocJar()
         }
@@ -80,3 +81,4 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
+
