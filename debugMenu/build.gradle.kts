@@ -5,12 +5,15 @@ plugins {
     alias(libs.plugins.maven.publish)
 }
 
+group = "com.github.Tapadoo"
+version = "1.0.6"
+
 publishing {
     publications {
         register<MavenPublication>("default") {
-            groupId = "com.tapadoo"
-            artifactId = "debugmenu"
-            version = "1.0.6"
+            groupId = project.group.toString()
+            artifactId = "DebugMenu"
+            version = project.version.toString()
 
             afterEvaluate {
                 from(components["default"])
@@ -81,4 +84,3 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
-
