@@ -1,5 +1,6 @@
 package com.tapado.debugmenuDemo
 
+import android.app.Activity
 import android.app.Application
 import com.tapado.debugmenuDemo.data.demoDataStore
 import com.tapadoo.debugmenu.DebugMenuAttacher
@@ -14,6 +15,9 @@ class DemoApp : Application() {
         super.onCreate()
 
         // Demo: Attach the DebugMenu using the Attacher (no Compose dependency required in consumer app)
+        //
+        // The optional activityFilter skips Activities that are not Compose-ready,
+        // such as splash screens or deep-link landing pages launched from push notifications.
         DebugMenuAttacher.attachToApplication(
             this,
             listOf(
@@ -27,6 +31,14 @@ class DemoApp : Application() {
                         }
                     )
                 ),
-            ))
+            ),
+            activityFilter = { activity ->
+                // Skip splash screens — they use installSplashScreen() and may not
+                // have ViewTree lifecycle owners set up before the splash completes.
+                // Also skip any activity whose class name matches common push notification
+                // patterns. Customize this filter to match your app's architecture.
+                activity !is SplashActivity
+            }
+        )
     }
 }

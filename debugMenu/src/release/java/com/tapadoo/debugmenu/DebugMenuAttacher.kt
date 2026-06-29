@@ -7,16 +7,19 @@ import com.tapadoo.debugmenu.module.DebugMenuModule
 object DebugMenuAttacher {
 
     @JvmStatic
+    @JvmOverloads
     fun attachToApplication(
         application: Application,
         modules: List<DebugMenuModule>,
         showFab: Boolean = true,
         enableShake: Boolean = false,
+        activityFilter: ((Activity) -> Boolean)? = null,
     ) {
         // No-op in release builds
     }
 
     @JvmStatic
+    @JvmOverloads
     fun attach(
         activity: Activity,
         modules: List<DebugMenuModule>,
