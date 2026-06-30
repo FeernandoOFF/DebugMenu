@@ -1,10 +1,14 @@
 package com.tapado.debugmenuDemo
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.tapado.debugmenuDemo.data.demoDataStore
 import com.tapado.debugmenuDemo.ui.DemoScreen
@@ -36,6 +41,13 @@ import kotlin.random.Random
 class MainActivity : ComponentActivity() {
     private lateinit var viewModel: DemoViewModel
 
+    /** Permission launcher for Android 13+ POST_NOTIFICATIONS. */
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        Timber.d("Notification permission granted: $isGranted")
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +62,9 @@ class MainActivity : ComponentActivity() {
         val factory = DemoViewModel.Companion.Factory(applicationContext)
         viewModel = ViewModelProvider(this, factory)[DemoViewModel::class.java]
         enableEdgeToEdge()
+
+        // Request notification permission on Android 13+ (required to show system notifications)
+        requestNotificationPermission()
 
         // Demo: Attach the DebugMenu using the Attacher (no Compose dependency required in consumer app)
 //        DebugMenuAttacher.attach(
@@ -108,6 +123,29 @@ class MainActivity : ComponentActivity() {
 //                            NetworkModule()
 //                        ),
 //                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Requests POST_NOTIFICATIONS permission on Android 13+.
+     * On older versions the permission is granted at install time.
+     */
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    Timber.d("Notification permission already granted")
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                    Timber.d("Showing notification permission rationale")
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                else -> {
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
         }
